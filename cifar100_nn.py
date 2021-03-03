@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
-
-
 import talos
 import tensorflow as tf
 from tensorflow.keras.datasets import cifar10
@@ -11,6 +8,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten
 import matplotlib.pyplot as plt
 
+#parameter dictionary for Talos
 p = {
     'units': [120, 240],
     'hidden_activations': ['relu', 'sigmoid'],
@@ -20,14 +18,14 @@ p = {
     'batch_size': [1000, 2000]
 }
 
-# Load CIFAR-10 data
+# Load CIFAR-100 data
 (input_train, target_train), (input_test, target_test) = cifar10.load_data()
 
-# Parse numbers as floats
+# Parse as floats
 input_train = input_train.astype('float32')
 input_test = input_test.astype('float32')
 
-# Normalize data
+# Normalize 
 input_train = input_train / 255
 input_test = input_test / 255
 
@@ -37,19 +35,21 @@ target_test = tf.keras.utils.to_categorical(target_test, 100)
 def my_model(input_train, target_train, x_val, y_val, params):
     # Create the model
     model = Sequential()
+    #add layers
     model.add(Flatten())
+    #only dense hidden layers
     model.add(Dense(params['units'], input_shape=(32,32,1)))
     model.add(Dense(params['units'], activation=params['activation']))
     model.add(Dense(params['units'], activation=params['hidden_activations']))
     model.add(Dense(params['units'], activation=params['hidden_activations']))
     model.add(Dense(100, activation=params['activation']))
 
-    # Compile the model
+    #compile model
     model.compile(loss=params['loss'],
                   optimizer=params['optimizer'],
                   metrics=['accuracy'])
 
-    # Fit data to model
+    #train data to model
     history = model.fit(input_train, target_train,
                 batch_size=params['batch_size'],
                 epochs=20,
@@ -57,88 +57,22 @@ def my_model(input_train, target_train, x_val, y_val, params):
                 verbose=1)
     return history, model
 
-    # Generate generalization metrics
+    #metrics 
     score = model.evaluate(input_test, target_test, verbose=0)
-    print(f'Test loss: {score[0]} / Test accuracy: {score[1]}')
+    print(f'Loss: {score[0]} / Accuracy: {score[1]}')
     
+    #plot validation results
     plt.plot(history.history['val_loss'])
-    plt.title('Validation loss history')
+    plt.title('Loss')
     plt.ylabel('Loss value')
     plt.xlabel('No. epoch')
     plt.show()
 
-    # Plot history: Accuracy
+    #plot accuracy history
     plt.plot(history.history['val_accuracy'])
-    plt.title('Validation accuracy history')
-    plt.ylabel('Accuracy value (%)')
+    plt.title('Accuracy')
+    plt.ylabel('Accuracy (%)')
     plt.xlabel('No. epoch')
     plt.show()
 
 talos.Scan(input_train, target_train, p, my_model, x_val=input_test, y_val=target_test, experiment_name="talos_output")
-
-
-# In[4]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
